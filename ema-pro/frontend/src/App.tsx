@@ -392,40 +392,76 @@ export default function App() {
   }, [])
 
   // ── WebSocket ────────────────────────────────────────────────────────────
-  const connect = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) return
-    try {
-      const ws = new WebSocket(WS)
-      wsRef.current = ws
-      ws.onopen = () => { setWsOk(true); retryRef.current = 0 }
-      ws.onclose = () => {
-        setWsOk(false)
-        if (retryRef.current < 20) {
-          retryRef.current++
-          setTimeout(connect, 3000)
-        }
-      }
-      ws.onmessage = (ev) => {
-        try {
-          const msg = JSON.parse(ev.data)
-          if (msg.type === 'INIT') {
-            if (msg.instruments) setInstruments(msg.instruments)
-            if (msg.quotes)   setQuotes(q => ({ ...q, ...msg.quotes }))
-            if (msg.signals)  setSignals(s => ({ ...s, ...msg.signals }))
-            setLoading(false)
-          }
-          if (msg.type === 'QUOTES')  setQuotes(q => ({ ...q, ...msg.data }))
-          if (msg.type === 'SIGNALS') setSignals(s => ({ ...s, ...msg.data }))
-        } catch {}
-      }
-      ws.onerror = () => ws.close()
-    } catch {}
-  }, [])
+  // ── WebSocket ────────────────────────────────────────────────────────────
+const connect = useCallback(() => {
+  if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+    return
+  }
 
-  useEffect(() => {
-    connect()
-    return () => wsRef.current?.close()
-  }, [connect])
+  console.log("Connecting WS:", WS)
+
+  try {
+    const ws = new WebSocket(WS)
+    wsRef.current = ws
+
+    ws.onopen = () => {
+      console.log("✅ WS Connected")
+      setWsOk(true)
+      retryRef.current = 0
+    }
+
+    ws.onclose = () => {
+      console.log("❌ WS Disconnected")
+      setWsOk(false)
+
+      if (retryRef.current < 10) {
+        retryRef.current++
+        setTimeout(() => {
+          console.log("🔁 Reconnecting WS...", retryRef.current)
+          connect()
+        }, 3000)
+      }
+    }
+
+    ws.onerror = (err) => {
+      console.log("⚠️ WS Error", err)
+      ws.close()
+    }
+
+    ws.onmessage = (ev) => {
+      console.log("📩 WS DATA:", ev.data) // 🔥 IMPORTANT DEBUG
+
+      try {
+        const msg = JSON.parse(ev.data)
+
+        switch (msg.type) {
+          case 'INIT':
+            if (msg.instruments) setInstruments(msg.instruments)
+            if (msg.quotes) setQuotes(msg.quotes)
+            if (msg.signals) setSignals(msg.signals)
+            setLoading(false)
+            break
+
+          case 'QUOTES':
+            setQuotes(prev => ({ ...prev, ...msg.data }))
+            break
+
+          case 'SIGNALS':
+            setSignals(prev => ({ ...prev, ...msg.data }))
+            break
+
+          default:
+            console.log("Unknown WS message:", msg)
+        }
+      } catch (e) {
+        console.log("❌ WS Parse Error", e)
+      }
+    }
+
+  } catch (err) {
+    console.log("WS Connection failed", err)
+  }
+}, [])
 
   // ── When timeframe changes, fetch signals for that TF ───────────────────
   useEffect(() => {
@@ -590,3 +626,4 @@ export default function App() {
     </div>
   )
 }
+
