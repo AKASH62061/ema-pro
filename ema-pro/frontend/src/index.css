@@ -1,0 +1,58 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #080b0f;
+  --bg2:     #0d1117;
+  --bg3:     #111820;
+  --card:    #131b24;
+  --border:  #1e2a38;
+  --border2: #243042;
+  --text:    #e8f0f8;
+  --text2:   #8fa8c0;
+  --muted:   #4a6280;
+  --bull:    #00e676;
+  --bear:    #ff3d5a;
+  --gold:    #ffd740;
+  --blue:    #40c4ff;
+  --purple:  #b388ff;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+button { font-family: inherit; }
+a { color: var(--blue); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.pulse { animation: pulse 1.5s ease-in-out infinite; }
+.slide-up { animation: slideUp 0.2s ease-out; }
+.fade-in  { animation: fadeIn 0.3s ease-out; }
+
+/* Signal badge */
+.sig-buy  { color: var(--bull); background: rgba(0,230,118,.08); border: 1px solid rgba(0,230,118,.3); border-radius: 4px; padding: 2px 8px; font-weight: 700; font-size: 11px; }
+.sig-sell { color: var(--bear); background: rgba(255,61,90,.08);  border: 1px solid rgba(255,61,90,.3);  border-radius: 4px; padding: 2px 8px; font-weight: 700; font-size: 11px; }
+.sig-neutral { color: var(--muted); background: rgba(74,98,128,.08); border: 1px solid rgba(74,98,128,.3); border-radius: 4px; padding: 2px 8px; font-weight: 700; font-size: 11px; }
+
+.mono { font-family: 'JetBrains Mono', monospace; }
