@@ -464,12 +464,24 @@ const connect = useCallback(() => {
 }, [])
 
   // ── When timeframe changes, fetch signals for that TF ───────────────────
-  useEffect(() => {
-    fetch(`${API}/api/signals?tf=${timeframe}`)
-      .then(r => r.json())
-      .then(d => setSignals(s => ({ ...s, ...d })))
-      .catch(() => {})
-  }, [timeframe])
+ // timeframe effect
+useEffect(() => {
+  fetch(`${API}/api/signals?tf=${timeframe}`)
+    .then(r => r.json())
+    .then(d => setSignals(s => ({ ...s, ...d })))
+    .catch(() => {})
+}, [timeframe])
+
+// ✅ ADD THIS HERE
+useEffect(() => {
+  connect()
+
+  return () => {
+    console.log("Closing WS")
+    wsRef.current?.close()
+    wsRef.current = null
+  }
+}, [])
 
   // ── Filtered instrument list ────────────────────────────────────────────
   const filtered = instruments.filter(inst => {
