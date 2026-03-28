@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 
 // ── Config ────────────────────────────────────────────────────────────────
 const API  = (import.meta as any).env?.VITE_API_URL  || 'https://ema-pro.onrender.com'
-const WS   = (import.meta as any).env?.VITE_WS_URL   || 'ws://ema-pro.onrender.com/ws'
+const WS   = (import.meta as any).env?.VITE_WS_URL   || 'wss://ema-pro.onrender.com/ws'
 const TIMEFRAMES = ['1m', '5m', '15m', '1h', '1d']
 
 // ── Types ──────────────────────────────────────────────────────────────────
