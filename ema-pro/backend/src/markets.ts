@@ -85,7 +85,7 @@ export async function fetchFinnhubCandles(symbol: string, interval: string, apiK
   const res = resMap[interval] || '15'
   const to   = Math.floor(Date.now() / 1000)
   // go back enough bars
-  const minsPer: Record<string,number> = { '1':'1','5':5,'15':15,'60':60,'D':1440 }
+  const minsPer: Record<string,number> = { '1':1,'5':5,'15':15,'60':60,'D':1440 }
   const mins = minsPer[res] || 15
   const from = to - mins * 60 * limit
   try {
